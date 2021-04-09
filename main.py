@@ -1,18 +1,18 @@
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 
 from celery_worker import app as celery
 from tasks import sqrt_find
 app = FastAPI()
 
 
-@app.get("/{value}")
-def square_pens(value: str):
+@app.get("/")
+def square_pens(value: str=Query(''),degree:int=Query(2)):
+    print(type(value))
     result = if_int(value)
     if (result['status']):
-        task = sqrt_find.delay(int(value))
-        #task = celery.send_task('sqrt',args=[int(value)])
+        task = sqrt_find.delay(int(value),degree)
         print(task)
     else:
         raise HTTPException(status_code=400, detail=result['text'])
