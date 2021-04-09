@@ -2,8 +2,8 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 
-from celery_worker import celery
-from tasks import celery as celery_app
+from celery_worker import app as celery
+from tasks import sqrt_find
 app = FastAPI()
 
 
@@ -11,10 +11,14 @@ app = FastAPI()
 def square_pens(value: str):
     result = if_int(value)
     if (result['status']):
-        celery_app.delay(int(value))
+        task = sqrt_find.delay(int(value))
+        #task = celery.send_task('sqrt',args=[int(value)])
+        print(task)
     else:
         raise HTTPException(status_code=400, detail=result['text'])
     return {"detail": "process start"}
+
+
 
 
 def if_int(in_num: str) -> dict:
